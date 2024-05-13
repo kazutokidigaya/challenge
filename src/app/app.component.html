@@ -1,0 +1,127 @@
+<div class="min-h-screen bg-gray-100 flex flex-col">
+  <!-- Header with the title centered -->
+  <div class="text-3xl font-bold text-center py-4">Git Search</div>
+
+  <!-- Main content area -->
+  <div
+    class="flex-grow flex flex-col items-center justify-start px-4 overflow-auto"
+  >
+    <!-- Search Bar and Button -->
+    <div class="w-full max-w-4xl flex flex-col items-center">
+      <div class="flex w-full gap-4 mb-4">
+        <input
+          type="text"
+          [(ngModel)]="username"
+          placeholder="Enter GitHub username"
+          class="form-input px-4 py-2 border rounded-md flex-1"
+        />
+        <button
+          (click)="searchUser(username)"
+          class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+        >
+          Search
+        </button>
+      </div>
+      <!-- Dropdown for selecting page size -->
+      <select
+        [(ngModel)]="pageSize"
+        (change)="loadRepos(username, 1, pageSize)"
+        class="form-select block w-full py-2 mt-2 text-gray-700"
+      >
+        <option value="10">10 per page</option>
+        <option value="20">20 per page</option>
+        <option value="50">50 per page</option>
+        <option value="100">100 per page</option>
+      </select>
+    </div>
+
+    <!-- Loader and User Information -->
+    <!-- User Information Display with Card Layout -->
+    <div *ngIf="users && !isLoading" class="text-center p-2 mt-7 mb-2">
+      <div
+        class="max-w-sm mx-auto bg-white rounded-xl shadow-md overflow-hidden md:max-w-lg"
+      >
+        <div class="md:flex">
+          <div class="md:flex-shrink-0">
+            <!-- Reduce the image size on larger screens -->
+            <img
+              [src]="users.avatar_url"
+              alt="User Image"
+              class="h-40 w-full object-cover md:w-32"
+            />
+          </div>
+          <div class="p-4">
+            <div
+              class="uppercase tracking-wide text-sm text-indigo-500 font-semibold"
+            >
+              {{ users.login }}
+            </div>
+            <a
+              href="{{ users.html_url }}"
+              target="_blank"
+              class="block mt-1 text-lg leading-tight font-medium text-black hover:underline"
+              >{{ users.name || "No name provided" }}</a
+            >
+            <p class="mt-2 text-gray-500">
+              {{ users.bio || "No bio available" }}
+            </p>
+            <p class="mt-2 text-gray-500">
+              {{ users.location || "Location unspecified" }}
+            </p>
+            <p *ngIf="users.twitter_username" class="mt-2 text-gray-500">
+              {{ "@" + users.twitter_username }}
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <a
+      href="{{ users.html_url }}"
+      target="_blank"
+      class="text-blue-500 hover:text-blue-800 mb-5"
+    >
+      {{ users.html_url }}
+    </a>
+    <!-- Repositories Display -->
+    <div class="w-full max-w-4xl mt-4 flex-grow">
+      <div
+        *ngIf="repos && repos.length > 0 && !isLoading"
+        class="flex flex-wrap justify-between"
+      >
+        <div *ngFor="let repo of repos" class="w-full md:w-1/2 p-2">
+          <div class="p-4 border rounded-lg shadow bg-white">
+            <h4 class="font-bold">{{ repo.name }}</h4>
+            <p>{{ repo.description }}</p>
+            <span
+              class="inline-block bg-blue-500 text-white font-bold py-1 px-2 rounded"
+            >
+              {{ repo.language || "Language not specified" }}
+            </span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Pagination Controls as Footer -->
+  <div class="py-4 w-full mt-10">
+    <div class="max-w-4xl mx-auto flex justify-between items-center">
+      <button
+        (click)="loadPage(paginationLinks.prev)"
+        [disabled]="!hasPreviousPage"
+        class="bg-blue-500 text-white font-bold py-2 px-4 rounded hover:bg-blue-700 disabled:opacity-50"
+      >
+        Previous
+      </button>
+      <span>Page: {{ currentPage }}</span>
+      <button
+        (click)="loadPage(paginationLinks.next)"
+        [disabled]="!hasNextPage"
+        class="bg-blue-500 text-white font-bold py-2 px-4 rounded hover:bg-blue-700"
+      >
+        Next
+      </button>
+    </div>
+  </div>
+</div>
